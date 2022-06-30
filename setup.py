@@ -11,7 +11,6 @@ with open('requirements.txt') as reqs:
         install_requires.append(req)
 
 
-##this is weird. 
 package_name = 'pf400_driver_pkg'
 
 setup(
