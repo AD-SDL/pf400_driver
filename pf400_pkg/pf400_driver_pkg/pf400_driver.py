@@ -48,12 +48,7 @@ def main_null():
     print("This function is not meant to have a main function")
 
 if __name__ == '__main__':
-<<<<<<< HEAD:arm_driver_pkg/arm_driver.py
-    # arm_transfer("rack","bob")
-    arm_transfer("transfer","bob","alex")
-=======
     pf400_transfer("transfer","plate_rack","bob")
     # pf400_transfer_command("transfer","bob","alex")
->>>>>>> a951ab5d672130ffe2a1495c7f62b2b480512776:pf400_driver_pkg/pf400_driver.py
     # pf400_transfer_command("complete")
 
