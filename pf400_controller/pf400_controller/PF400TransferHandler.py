@@ -106,11 +106,11 @@ class PF400TransferHandler(Node):
         # Create services
 
         # Sub to topics
-        self.state_reset_sub = self.create_subscription(pf400Reset, "/pf400/pf400_state_reset",self.state_reset_callback, 10)
+        self.state_reset_sub = self.create_subscription(PF400Reset, "/pf400/pf400_state_reset",self.state_reset_callback, 10)
         self.state_reset_sub # prevent unused variable warning
 
         #  pf400 State Syncronization topic 
-        self.state_sync = self.create_subscription(pf400StateUpdate, "/pf400/pf400_state_update", self.pf400_state_update_callback, 10)
+        self.state_sync = self.create_subscription(PF400StateUpdate, "/pf400/pf400_state_update", self.pf400_state_update_callback, 10)
         self.state_sync # prevent unused variable warning
 
         # Initialization Complete
