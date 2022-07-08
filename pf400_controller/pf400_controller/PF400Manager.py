@@ -130,7 +130,7 @@ class PF400Manager(Node):
             "PF400 Manager for ID: %s name: %s initialization completed"
             % (self.id, self.name)
         )
-     
+   ##??  
     def set_peeler_state(self, new_state):
         args = []
         args.append(self)
@@ -140,7 +140,7 @@ class PF400Manager(Node):
             self.get_logger().error(
                 "Unable to update state with manager, continuing but the state of the pf400 may be incorrect"
             )
-
+   ##??  
     def set_sealer_state(self, new_state):
         args = []
         args.append(self)
@@ -268,15 +268,14 @@ class PF400Manager(Node):
         identifier_other = from_name + " " + to_name + " " + item + " Node: " + other_node
 
         if to_id == "P" or to_id == "S" or to_id == "PS":
-            # TODO:
-            if self.state == "READY": #TODO: Check current state of the peeler/sealer/platestacker 
+            if get_node_info(self, to_id)["state"] == self.state["READY"]: # This could be check with integer numbers too (O) #TODO: Check current state of the peeler/sealer/platestacker 
                 # Add to run queue
                 self.run_queue.append(
                 identifier_cur + "\n" + identifier_other
                 ) # DO I ADD THE IDENTIFIER_OTHER TO RUN QUEUE?
                 response.status =  response.WAITING
                 return response
-            elif self.state == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
+            elif get_node_info(self, to_id)["state"] == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
                 response.status =  response.ERROR
                 return response
             else:
@@ -285,14 +284,14 @@ class PF400Manager(Node):
 
         elif from_id == "P" or from_id == "S" or from_id == "PS":
 
-            if self.state == "COMPLETED": #TODO: Check current state of the peeler/sealer/platestacker 
+            if get_node_info(self, to_id)["state"] == "COMPLETED": #TODO: Check current state of the peeler/sealer/platestacker 
                 # Add to run queue
                 self.run_queue.append(
                 identifier_cur + "\n" + identifier_other
                 ) # DO I ADD THE IDENTIFIER_OTHER TO RUN QUEUE?
                 response.status =  response.WAITING
                 return response
-            elif self.state == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
+            elif get_node_info(self, to_id)["state"] == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
                 response.status =  response.ERROR
                 return response
             else:
