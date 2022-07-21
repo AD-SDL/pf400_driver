@@ -4,7 +4,7 @@ import logging
 import json
 
 import pf400_client
-from pf400_client import PF400
+from pf400_command_client import PF400
 
 #Log Configuration
 file_path = os.path.join(os.path.split(os.path.dirname(__file__))[0]  + '/pf400_logs/rpl_pf400_logs.log')

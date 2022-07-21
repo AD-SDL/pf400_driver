@@ -1,17 +1,9 @@
-build/*
-install/*
-log/*
-src/ros_tutorials/
-*.swp
-*.save
-Protocol_Modules/Protocol*
-.vscode/*
+#package specific ignores
+*_logs/*.log
+*.log
+**/logs
+**/log
 
-# Ignore any driver code
-ot2_driver_pkg
-arm_driver_pkg
-
-# Python
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -35,6 +27,7 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -64,7 +57,6 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
 
 # Translations
 *.mo
@@ -87,7 +79,6 @@ instance/
 docs/_build/
 
 # PyBuilder
-.pybuilder/
 target/
 
 # Jupyter Notebook
@@ -98,9 +89,7 @@ profile_default/
 ipython_config.py
 
 # pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+.python-version
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
@@ -145,66 +134,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.vscode/
 
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-
-# CMake
-
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-
-# C++
-
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Textbook
-Texts/OS_Textbook.pdf
-*.DS_Store
-ot2_driver/
-pf400_driver/
-workcell_manager/
+# Ignore Mac DS_Store files
+.DS_Store
+**/.DS_Store
+.DS_Store?
