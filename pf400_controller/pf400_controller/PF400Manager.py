@@ -63,8 +63,9 @@ class PF400Manager(Node):
             "READY": 0,
             "ERROR": 2,
             "QUEUED": 3,
+            "COMPLETED": 4
         }
-        self.status = {"ERROR": 1, "SUCCESS": 0, "WARNING": 2, "FATAL": 3, "WAITING": 10}
+        self.status = {"ERROR": 1, "SUCCESS": 0, "WARNING": 2, "FATAL": 3, "COMPLETED": 4, "WAITING": 10}
 
         # State information
         self.current_state = self.state["READY"]  # Start ready
@@ -129,7 +130,26 @@ class PF400Manager(Node):
             "PF400 Manager for ID: %s name: %s initialization completed"
             % (self.id, self.name)
         )
-     
+   ##??  
+    def set_peeler_state(self, new_state):
+        args = []
+        args.append(self)
+        args.append(new_state)
+        status = retry(self, _update_peeler_state, 1, 0, args) # if it fails it usually isn't something that will be fixed upon a retry
+        if status == self.status["ERROR"] or status == self.status["FATAL"]:
+            self.get_logger().error(
+                "Unable to update state with manager, continuing but the state of the pf400 may be incorrect"
+            )
+   ##??  
+    def set_sealer_state(self, new_state):
+        args = []
+        args.append(self)
+        args.append(new_state)
+        status = retry(self, _update_sealer_state, 1, 0, args) # if it fails it usually isn't something that will be fixed upon a retry
+        if status == self.status["ERROR"] or status == self.status["FATAL"]:
+            self.get_logger().error(
+                "Unable to update state with manager, continuing but the state of the pf400 may be incorrect"
+            )     
 
     # Upon a completed transfer this function adds it to the queue
     def completed_transfer_callback(self, msg):
@@ -138,15 +158,43 @@ class PF400Manager(Node):
 
         # Get data
         identifier_cur = msg.identifier_cur
-        identifier_other = msg.identifier_other
+        identifier_check = identifier_cur.split(" ")
+        
+        # NOT SURE ABOUT THIS PART!!! HOW TO CHANGE PEALER/SEALER STATES
+        if identifier_check[0].lower() ==  "peeler":
+            # self.state = "READY" #?????????????????????????????
+            self.set_peeler_state(self.state["READY"])
+            """ TODO: SET STATE READY"""
+            
+        elif identifier_check[1].lower() ==  "peeler":
+            # self.state = "QUEUED" #?????????????????????????????
+            self.set_peeler_state(self.state["QUEUED"])
+            """ TODO: SET STATE QUEUED - START PEEL/SEAL (STATE BUSY) - SET STATE COMPLETED"""
+
+        elif identifier_check[0].lower() == "sealer":
+            self.set_sealer_state(self.state["READY"])
+
+        elif identifier_check[1].lower() == "sealer":
+            self.set_sealer_state(self.state["QUEUED"])
+    
+    # HERE CALL THE PEELER_HANDLER FUNCTION FROM PEELER_CONTROLLER NODE TO DEAL WITH THE STATES AND PEELING? 
+    # TODO: DESIGN A PEELER_CONTROLLER
+    
+        elif identifier_check[0].lower() ==  "plate_stacker":
+            pass
+        else:    
+            identifier_other = msg.identifier_other
+            # Add to completed queue
+            self.completed_queue.append(identifier_other)
+            # Remove from transfer
+            self.transfer_queue.remove(identifier_other)
+
 
         # Add to completed queue
         self.completed_queue.append(identifier_cur)
-        self.completed_queue.append(identifier_other)
 
         # Remove from transfer
         self.transfer_queue.remove(identifier_cur)
-        self.transfer_queue.remove(identifier_other)
 
         # Remove from run queue (TODO: assertion check, the popped is the same as the completed)
         self.run_queue.pop(0) # The one that was being worked on was the first one
@@ -218,6 +266,38 @@ class PF400Manager(Node):
         # Create identifier
         identifier_cur = from_name + " " + to_name + " " + item + " Node: " + cur_node
         identifier_other = from_name + " " + to_name + " " + item + " Node: " + other_node
+
+        if to_id == "P" or to_id == "S" or to_id == "PS":
+            if get_node_info(self, to_id)["state"] == self.state["READY"]: # This could be check with integer numbers too (O) #TODO: Check current state of the peeler/sealer/platestacker 
+                # Add to run queue
+                self.run_queue.append(
+                identifier_cur + "\n" + identifier_other
+                ) # DO I ADD THE IDENTIFIER_OTHER TO RUN QUEUE?
+                response.status =  response.WAITING
+                return response
+            elif get_node_info(self, to_id)["state"] == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
+                response.status =  response.ERROR
+                return response
+            else:
+                response.status =  response.WAITING 
+                return response.WAITING
+
+        elif from_id == "P" or from_id == "S" or from_id == "PS":
+
+            if get_node_info(self, to_id)["state"] == "COMPLETED": #TODO: Check current state of the peeler/sealer/platestacker 
+                # Add to run queue
+                self.run_queue.append(
+                identifier_cur + "\n" + identifier_other
+                ) # DO I ADD THE IDENTIFIER_OTHER TO RUN QUEUE?
+                response.status =  response.WAITING
+                return response
+            elif get_node_info(self, to_id)["state"] == "ERROR": #TODO: Check current state of the peeler/sealer/platestacker 
+                response.status =  response.ERROR
+                return response
+            else:
+                response.status =  response.WAITING 
+                return response.WAITING
+
 
         # Check to see if the transfer already completed
         completed = False
